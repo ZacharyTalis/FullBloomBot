@@ -5,7 +5,6 @@ import de.btobastian.javacord.entities.User;
 import de.btobastian.javacord.entities.message.Message;
 import de.btobastian.javacord.listener.message.MessageCreateListener;
 
-import javax.activation.CommandMap;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
