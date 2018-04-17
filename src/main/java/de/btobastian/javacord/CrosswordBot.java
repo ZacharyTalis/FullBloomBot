@@ -46,7 +46,7 @@ public class CrosswordBot {
                         send = "";
 
 
-                        // Set all commands
+                        ///// Set all commands /////
                         Command COMMAND_HELP = new Command("!cbhelp", "Get all of the commands from CrosswordBot.", publicCommands);
                         Command COMMAND_PING = new Command("!ping", "Check to see if CrosswordBot is alive.", publicCommands);
                         Command COMMAND_TIME = new Command("!time", "Enter your time for the current puzzle.", publicCommands);
@@ -259,6 +259,11 @@ public class CrosswordBot {
         });
     }
 
+    /**
+     * Check to see if the first word in user input is for the given command.
+     * @param check the command to check for.
+     * @return
+     */
     private boolean check(Command check) {
         try {
             return userInput[0].equalsIgnoreCase(check.getName());
@@ -268,15 +273,28 @@ public class CrosswordBot {
         }
     }
 
+    /**
+     * Add a string message to the reply (followed by a newline).
+     * @param message the message to add onto the reply.
+     */
     private void add(String message) {
         send += message + "\n";
     }
 
+    /**
+     * Get the date (used as a key for the nested HashMap in times).
+     * @return the date.
+     */
     private String getDate() {
         // https://stackoverflow.com/questions/2942857/how-to-convert-current-date-into-string-in-java
         return new SimpleDateFormat("MM-dd-yyyy").format(new Date());
     }
 
+    /**
+     * Return a time in seconds as a properly-formatted time.
+     * @param seconds the int time in seconds.
+     * @return the String time (0:00).
+     */
     public static String formatTime(int seconds) {
         String minutes = String.valueOf((int)Math.floor(seconds / 60));
         String secondsDisplay = String.valueOf(seconds % 60);
@@ -284,11 +302,12 @@ public class CrosswordBot {
         return minutes.concat(":" + secondsDisplay);
     }
 
+    /**
+     * Get the bot up and running.
+     * @param args the executable arguments.
+     */
     public static void main(String args[]) {
-
         CrosswordBot bot = new CrosswordBot(BOT_TOKEN);
-
-
     }
 
 }

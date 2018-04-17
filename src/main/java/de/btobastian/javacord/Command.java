@@ -4,8 +4,8 @@ import java.util.LinkedList;
 
 public class Command {
 
-    String name;
-    String info;
+    private String name;
+    private String info;
     LinkedList<Command> commands;
 
     Command(String name, String info, LinkedList<Command> commands) {
