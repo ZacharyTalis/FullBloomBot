@@ -1,7 +1,9 @@
 package de.btobastian.javacord;
 
 import com.google.common.util.concurrent.FutureCallback;
+import de.btobastian.javacord.entities.CustomEmoji;
 import de.btobastian.javacord.entities.User;
+import de.btobastian.javacord.entities.impl.ImplCustomEmoji;
 import de.btobastian.javacord.entities.message.Message;
 import de.btobastian.javacord.listener.message.MessageCreateListener;
 
@@ -22,7 +24,7 @@ public class CrosswordBot {
     private String[] userInput;
 
     private static final String BOT_TOKEN = "NDM1NTYwNjI3NjA0MjkxNTk1.DbbMDg.0uUYi9IFWJhSV3wRpQxWBap6HYk";
-    private final String ERROR_TIME = "Proper syntax - \"!time 0:00\"";
+    private final String ERROR_TIME = "Proper syntax - \"M:SS\"";
     private final String BREAK = "-----";
     private final LinkedList<Command> publicCommands = new LinkedList<>();
 
@@ -47,15 +49,27 @@ public class CrosswordBot {
 
 
                         ///// Set all commands /////
-                        Command COMMAND_HELP = new Command("!cbhelp", "Get all of the commands from CrosswordBot.", publicCommands);
-                        Command COMMAND_PING = new Command("!ping", "Check to see if CrosswordBot is alive.", publicCommands);
-                        Command COMMAND_TIME = new Command("!time", "Enter your time for the current puzzle.", publicCommands);
-                        Command COMMAND_MTT = new Command("!mytimetoday", "Display your time for the current puzzle.", publicCommands);
-                        Command COMMAND_MT = new Command("!mytimes", "Get all of your times.", publicCommands);
-                        Command COMMAND_ATT = new Command("!alltimestoday", "Get all of this current puzzle's times.", publicCommands);
-                        Command COMMAND_AT = new Command("!alltimes", "Get all of the times ever recorded.", publicCommands);
-                        Command COMMAND_BTT = new Command("!besttimetoday", "Display the best time for the current puzzle.", publicCommands);
-                        Command COMMAND_BTAT = new Command("!besttimealltime", "Display the best time for any puzzle.", publicCommands);
+                        final Command COMMAND_HELP = new Command("!cbhelp", "Get all of the commands from CrosswordBot.", publicCommands);
+                        final Command COMMAND_PING = new Command("!ping", "Check to see if CrosswordBot is alive.", publicCommands);
+                        final Command COMMAND_TIME = new Command("!time", "Enter your time for the current puzzle.", publicCommands);
+                        final Command COMMAND_MTT = new Command("!mytimetoday", "Display your time for the current puzzle.", publicCommands);
+                        final Command COMMAND_MT = new Command("!mytimes", "Get all of your times.", publicCommands);
+                        // TODO add !mybesttime
+                        final Command COMMAND_ATT = new Command("!alltimestoday", "Get all of this current puzzle's times.", publicCommands);
+                        final Command COMMAND_AT = new Command("!alltimes", "Get all of the times ever recorded.", publicCommands);
+                        final Command COMMAND_BTT = new Command("!besttimetoday", "Display the best time for the current puzzle.", publicCommands);
+                        final Command COMMAND_BTAT = new Command("!besttimealltime", "Display the best time for any puzzle.", publicCommands);
+
+
+                        // TODO this doesn't always send right away?
+                        ///// COMMAND_HELP /////
+                        if (check(COMMAND_HELP)) {
+                            String pm = "";
+                            for (Command command : publicCommands) {
+                                pm = pm.concat(command.getName()+" ~ "+command.getInfo()+"\n");
+                            }
+                            message.getAuthor().sendMessage(pm);
+                        }
 
 
                         ///// !ping /////
@@ -65,12 +79,19 @@ public class CrosswordBot {
 
 
                         ///// TODO: Use message.addCustomEmojiReaction() to use :thanks:
-                        ///// TODO: no need for "!time"
                         ///// COMMAND_TIME /////
-                        if (check(COMMAND_TIME)) {
-                            if (userInput.length == 2) {
+                        if (check(COMMAND_TIME) || userInput[0].split(":").length == 2) {
+                            if ((check(COMMAND_TIME) && userInput.length == 2) ||
+                                    (userInput[0].split(":").length == 2)) {
 
-                                String[] timeSplit = userInput[1].split(":");
+                                String[] timeSplit;
+
+                                if (check(COMMAND_TIME)) {
+                                    timeSplit = userInput[1].split(":");
+                                } else {
+                                    timeSplit = userInput[0].split(":");
+                                }
+
                                 if (timeSplit.length == 2 && timeSplit[1].length() == 2) {
 
                                     try {
@@ -79,6 +100,7 @@ public class CrosswordBot {
 
                                         // make new times key/value for new user
                                         if (!times.keySet().contains(message.getAuthor())) {
+                                            @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
                                             HashMap<String, TimeLog> newList = new HashMap<>();
                                             times.put(message.getAuthor(), newList);
                                         }
@@ -100,7 +122,11 @@ public class CrosswordBot {
                                         // Confirmation message
                                         if (overrideTime) add("Time overridden for " + message.getAuthor().getName() +
                                                 ".");
-                                        else add("Time recorded for " + message.getAuthor().getName() + ".");
+                                        else {
+                                            System.out.println("Time recorded for " + message.getAuthor().getName() + ".");
+                                            // Uncomment if you'd like to have an initial confirmation message
+                                            // add("Time recorded for " + message.getAuthor().getName() + ".");
+                                        }
                                     } catch (NumberFormatException exc) {
                                         add(ERROR_TIME);
                                     }
@@ -234,16 +260,6 @@ public class CrosswordBot {
                         }
 
 
-                        ///// COMMAND_HELP /////
-                        if (check(COMMAND_HELP)) {
-                            String pm = "";
-                            for (Command command : publicCommands) {
-                                pm = pm.concat(command.getName()+" ~ "+command.getInfo()+"\n");
-                            }
-                            message.getAuthor().sendMessage(pm);
-                        }
-
-
                         //send out final message
                         if (!send.equals("")) message.reply(send);
 
@@ -262,7 +278,7 @@ public class CrosswordBot {
     /**
      * Check to see if the first word in user input is for the given command.
      * @param check the command to check for.
-     * @return
+     * @return whether or not the user input is what you were checking for.
      */
     private boolean check(Command check) {
         try {
