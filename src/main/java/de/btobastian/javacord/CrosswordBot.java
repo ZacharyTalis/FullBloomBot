@@ -54,7 +54,7 @@ public class CrosswordBot {
                         final Command COMMAND_TIME = new Command("!time", "Enter your time for the current puzzle.", publicCommands);
                         final Command COMMAND_MTT = new Command("!mytimetoday", "Display your time for the current puzzle.", publicCommands);
                         final Command COMMAND_MT = new Command("!mytimes", "Get all of your times.", publicCommands);
-                        // TODO add !mybesttime
+                        final Command COMMAND_MBT = new Command("!mybesttime", "Display your best time ever.", publicCommands);
                         final Command COMMAND_ATT = new Command("!alltimestoday", "Get all of this current puzzle's times.", publicCommands);
                         final Command COMMAND_AT = new Command("!alltimes", "Get all of the times ever recorded.", publicCommands);
                         final Command COMMAND_BTT = new Command("!besttimetoday", "Display the best time for the current puzzle.", publicCommands);
@@ -158,6 +158,30 @@ public class CrosswordBot {
                             } else add("You haven't submitted any times.");
                         }
 
+                        ///// COMMAND_MBT /////
+                        if (check(COMMAND_MBT)) {
+                            if (times.keySet().contains(message.getAuthor())) {
+
+                                int bestTime = -1;
+                                String bestDate = "";
+
+                                for (String date : times.get(message.getAuthor()).keySet()) {
+                                    if (bestTime == -1 || bestTime > times.get(message.getAuthor()).get(date).getTime()) {
+                                        bestTime = times.get(message.getAuthor()).get(date).getTime();
+                                        bestDate = date;
+                                    }
+                                }
+
+                                try {
+                                    add("Best time for " + message.getAuthor().getName() + " is:");
+                                    add(times.get(message.getAuthor()).get(bestDate).toString());
+                                } catch (NullPointerException exc) {
+                                    System.out.print("Can't fetch properly.");
+                                }
+
+                            } else add("You haven't submitted any times.");
+                        }
+
 
                         ///// COMMAND_ATT /////
                         if (check(COMMAND_ATT)) {
@@ -254,7 +278,6 @@ public class CrosswordBot {
                                 } catch (NullPointerException exc) {
                                     System.out.print("Can't fetch properly.");
                                 }
-
 
                             } else add("No times submitted, ever.");
                         }
