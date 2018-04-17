@@ -91,5 +91,4 @@ public class Javacord {
         api.setToken(token, bot);
         return api;
     }
-
 }
