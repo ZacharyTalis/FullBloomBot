@@ -1,6 +1,7 @@
 package de.btobastian.javacord;
 
 import com.google.common.util.concurrent.FutureCallback;
+import de.btobastian.javacord.entities.User;
 import de.btobastian.javacord.entities.message.Message;
 import de.btobastian.javacord.listener.message.MessageCreateListener;
 
@@ -25,29 +26,44 @@ public class CrosswordBot {
     private final String ERROR_TIME = "Proper syntax - \"M:SS\"";
     private final String BREAK = "-----";
     private final LinkedList<Command> publicCommands = new LinkedList<>();
+    private final LinkedList<Command> staffCommands = new LinkedList<>();
+
+    ///// Set all staff /////
+    private LinkedList<String> staffList = new LinkedList<>();
 
     /**
-     * Initial code shamelessly stolen from the GitHub docs.
+     * Constructor/runtime for CrosswordBot.
      * @param token the String token used for the bot to connect to Discord.
      */
     private CrosswordBot(String token) {
 
-        ///// Set all commands /////
+        ///// Set all public commands /////
         final Command COMMAND_HELP = new Command("!cbhelp", "Get all of the commands from CrosswordBot.",
                 publicCommands);
         final Command COMMAND_PING = new Command("!ping", "Check to see if CrosswordBot is alive.", publicCommands);
         final Command COMMAND_TIME = new Command("!time", "Enter your time for the current puzzle.", publicCommands);
-        final Command COMMAND_MTT = new Command("!mytimetoday", "Display your time for the current puzzle.",
+        final Command COMMAND_MTT = new Command("!mytime", "Display your time for the current puzzle.",
                 publicCommands);
         final Command COMMAND_MT = new Command("!mytimes", "Get all of your times.", publicCommands);
         final Command COMMAND_MBT = new Command("!mybesttime", "Display your best time ever.", publicCommands);
-        final Command COMMAND_ATT = new Command("!alltimestoday", "Get all of this current puzzle's times.",
+        final Command COMMAND_ATT = new Command("!alltimes", "Get all of this current puzzle's times.",
                 publicCommands);
-        final Command COMMAND_AT = new Command("!alltimes", "Get all of the times ever recorded.", publicCommands);
-        final Command COMMAND_BTT = new Command("!besttimetoday", "Display the best time for the current puzzle.",
+        final Command COMMAND_AT = new Command("!alltimesever", "Get all of the times ever recorded.", publicCommands);
+        final Command COMMAND_BTT = new Command("!besttime", "Display the best time for the current puzzle.",
                 publicCommands);
-        final Command COMMAND_BTAT = new Command("!besttimealltime", "Display the best time for any puzzle.",
+        final Command COMMAND_BTAT = new Command("!besttimeever", "Display the best time for any puzzle.",
                 publicCommands);
+
+        ///// Set all staff commands /////
+        final Command COMMAND_NP = new Command("!newpuzzle", "Move to the current day's puzzle.",
+                staffCommands);
+        final Command COMMAND_PP = new Command("!previouspuzzle", "Begin recording times for the previous puzzle.",
+                staffCommands);
+        final Command COMMAND_AS = new Command("!addstaff", "Add a staff to the staff list.",
+                staffCommands);
+
+        //Set all staff
+        staffList.add("KubeKing4556"); staffList.add("saph"); staffList.add("abp");
 
         // Token is provided by the Discord bot page
         DiscordAPI api = Javacord.getApi(token, true);
@@ -68,13 +84,20 @@ public class CrosswordBot {
                         pm = "";
 
 
+                        ///// PUBLIC COMMANDS BELOW /////
+
+
                         ///// COMMAND_HELP /////
                         if (check(COMMAND_HELP)) {
                             for (Command command : publicCommands) {
-                                //pm = pm.concat(command.getName()+" ~ "+command.getInfo()+"\n");
-                                pm = pm.concat(command.getName() + "\n");
+                                pm = pm.concat(command.getName()+" ~ "+command.getInfo()+"\n");
                             }
-                            message.getAuthor().sendMessage(pm);
+                            if (staffList.contains(message.getAuthor().getName())) {
+                                pm = pm.concat("\n-- Staff Commands Below --\n");
+                                for (Command command : staffCommands) {
+                                    pm = pm.concat(command.getName()+" ~ "+command.getInfo()+"\n");
+                                }
+                            }
                         }
 
 
@@ -283,13 +306,34 @@ public class CrosswordBot {
 
                                 try {
                                     assert bestUser != null;
-                                    add("Best time of all time is from " + bestUser + ":");
+                                    add("Best time ever is from " + bestUser + ":");
                                     add(times.get(bestUser).get(bestDate).toString());
                                 } catch (NullPointerException exc) {
                                     System.out.print("Can't fetch properly.");
                                 }
 
                             } else add("No times submitted, ever.");
+                        }
+
+
+                        ///// STAFF COMMANDS BELOW /////
+
+
+                        ///// COMMAND_ND /////
+                        if (check(COMMAND_NP) && inStaff(staffList, message)) {
+                            send = "Today's puzzle would display here.";
+                        }
+
+
+                        ///// COMMAND_PD /////
+                        if (check(COMMAND_PP) && inStaff(staffList, message)) {
+                            send = "Begin recording times for the previous puzzle.";
+                        }
+
+
+                        ///// COMMAND_AS /////
+                        if (check(COMMAND_AS) && inStaff(staffList, message)) {
+                            send = "Staff add implementation.";
                         }
 
 
@@ -329,6 +373,16 @@ public class CrosswordBot {
      */
     private void add(String message) {
         send += message + "\n";
+    }
+
+    /**
+     * Check to see whether or not the message sender is staff.
+     * @param staffList the LinkedList of staff member names.
+     * @param message the message sent.
+     * @return whether or not the message sender is staff.
+     */
+    private boolean inStaff(LinkedList<String> staffList, Message message) {
+        return staffList.contains(message.getAuthor().getName());
     }
 
     /**
