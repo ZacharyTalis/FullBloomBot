@@ -14,17 +14,13 @@ public class Times implements Serializable {
     private LinkedList<String> keys = new LinkedList<>();
     private LinkedList<HashMap<String, TimeLog>> values = new LinkedList<>();
 
-    // TODO change to relative filnemaes
-    private final String KEYSNAME = "C:\\Users\\Zachary\\Desktop\\RIT\\CS\\Java\\CrosswordBot\\src\\main\\java\\de" +
-            "\\btobastian\\javacord\\keys.log";
-    private final String VALUESNAME = "C:\\Users\\Zachary\\Desktop\\RIT\\CS\\Java\\CrosswordBot\\src\\main\\java\\de" +
-            "\\btobastian\\javacord\\values.log";
+    private final String KEYSNAME = "data/keys.log";
+    private final String VALUESNAME = "data/values.log";
 
     public Times() {
 
         try {
 
-            //overwrite();
             ObjectInputStream readsOne = new ObjectInputStream(new FileInputStream(KEYSNAME));
             //noinspection unchecked
             keys = (LinkedList<String>) readsOne.readObject();
