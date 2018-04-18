@@ -2,6 +2,9 @@ package de.btobastian.javacord;
 
 import java.util.LinkedList;
 
+/**
+ * A single command that can activate a CrosswordBot function.
+ */
 public class Command {
 
     private String name;

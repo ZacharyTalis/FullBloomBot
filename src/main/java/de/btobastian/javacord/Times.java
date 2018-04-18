@@ -6,6 +6,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
+/**
+ * Implements accessing and saving TimeLog data.
+ */
 public class Times implements Serializable {
 
     //              Username        Date  TimeLog

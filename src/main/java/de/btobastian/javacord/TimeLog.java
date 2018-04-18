@@ -2,6 +2,9 @@ package de.btobastian.javacord;
 
 import java.io.Serializable;
 
+/**
+ * Holds a single time/date log for a solve.
+ */
 public class TimeLog implements Serializable {
 
     private int time;

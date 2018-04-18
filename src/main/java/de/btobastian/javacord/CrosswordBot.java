@@ -11,10 +11,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
- * Bot for saving mini-crossword times
+ * Bot for saving Mini Crossword times.
  */
 public class CrosswordBot {
-
 
     private Times times = new Times();
 
@@ -33,41 +32,47 @@ public class CrosswordBot {
      */
     private CrosswordBot(String token) {
 
-        // See "How to get the token" below
+        ///// Set all commands /////
+        final Command COMMAND_HELP = new Command("!cbhelp", "Get all of the commands from CrosswordBot.",
+                publicCommands);
+        final Command COMMAND_PING = new Command("!ping", "Check to see if CrosswordBot is alive.", publicCommands);
+        final Command COMMAND_TIME = new Command("!time", "Enter your time for the current puzzle.", publicCommands);
+        final Command COMMAND_MTT = new Command("!mytimetoday", "Display your time for the current puzzle.",
+                publicCommands);
+        final Command COMMAND_MT = new Command("!mytimes", "Get all of your times.", publicCommands);
+        final Command COMMAND_MBT = new Command("!mybesttime", "Display your best time ever.", publicCommands);
+        final Command COMMAND_ATT = new Command("!alltimestoday", "Get all of this current puzzle's times.",
+                publicCommands);
+        final Command COMMAND_AT = new Command("!alltimes", "Get all of the times ever recorded.", publicCommands);
+        final Command COMMAND_BTT = new Command("!besttimetoday", "Display the best time for the current puzzle.",
+                publicCommands);
+        final Command COMMAND_BTAT = new Command("!besttimealltime", "Display the best time for any puzzle.",
+                publicCommands);
+
+        // Token is provided by the Discord bot page
         DiscordAPI api = Javacord.getApi(token, true);
-        // connect
+
+        // Begin the connect
         api.connect(new FutureCallback<DiscordAPI>() {
             @Override
             public void onSuccess(DiscordAPI api) {
                 // register listener
                 api.registerListener(new MessageCreateListener() {
                     @Override
-                    public void onMessageCreate(DiscordAPI api, Message message) {
+                    public void onMessageCreate (DiscordAPI api, Message message) {
 
+
+                        // Get message input, and refresh send and pm
                         userInput = message.getContent().split(" ");
                         send = "";
                         pm = "";
 
 
-                        ///// Set all commands /////
-                        final Command COMMAND_HELP = new Command("!cbhelp", "Get all of the commands from CrosswordBot.", publicCommands);
-                        final Command COMMAND_PING = new Command("!ping", "Check to see if CrosswordBot is alive.", publicCommands);
-                        final Command COMMAND_TIME = new Command("!time", "Enter your time for the current puzzle.", publicCommands);
-                        final Command COMMAND_MTT = new Command("!mytimetoday", "Display your time for the current puzzle.", publicCommands);
-                        final Command COMMAND_MT = new Command("!mytimes", "Get all of your times.", publicCommands);
-                        final Command COMMAND_MBT = new Command("!mybesttime", "Display your best time ever.", publicCommands);
-                        final Command COMMAND_ATT = new Command("!alltimestoday", "Get all of this current puzzle's times.", publicCommands);
-                        final Command COMMAND_AT = new Command("!alltimes", "Get all of the times ever recorded.", publicCommands);
-                        final Command COMMAND_BTT = new Command("!besttimetoday", "Display the best time for the current puzzle.", publicCommands);
-                        final Command COMMAND_BTAT = new Command("!besttimealltime", "Display the best time for any puzzle.", publicCommands);
-
-
-                        // TODO this doesn't always send right away?
                         ///// COMMAND_HELP /////
                         if (check(COMMAND_HELP)) {
                             for (Command command : publicCommands) {
                                 //pm = pm.concat(command.getName()+" ~ "+command.getInfo()+"\n");
-                                pm = pm.concat(command.getName()+"\n");
+                                pm = pm.concat(command.getName() + "\n");
                             }
                             message.getAuthor().sendMessage(pm);
                         }
@@ -114,8 +119,8 @@ public class CrosswordBot {
 
                                         // add time
                                         times.get(message.getAuthor().getName()).put(getDate(),
-                                                new TimeLog(seconds+minutes*60,
-                                                getDate()));
+                                                new TimeLog(seconds + minutes * 60,
+                                                        getDate()));
                                         times.overwrite();
 
                                         // react to !time message
@@ -126,7 +131,8 @@ public class CrosswordBot {
                                         if (overrideTime) add("Time overridden for " + message.getAuthor().getName() +
                                                 ".");
                                         else {
-                                            System.out.println("Time recorded for " + message.getAuthor().getName() + ".");
+                                            System.out.println("Time recorded for " + message.getAuthor().getName() +
+                                                    ".");
                                             // Uncomment if you'd like to have an initial confirmation message
                                             // add("Time recorded for " + message.getAuthor().getName() + ".");
                                         }
@@ -169,7 +175,8 @@ public class CrosswordBot {
                                 String bestDate = "";
 
                                 for (String date : times.get(message.getAuthor().getName()).keySet()) {
-                                    if (bestTime == -1 || bestTime > times.get(message.getAuthor().getName()).get(date).getTime()) {
+                                    if (bestTime == -1 || bestTime > times.get(message.getAuthor().getName()).get
+                                            (date).getTime()) {
                                         bestTime = times.get(message.getAuthor().getName()).get(date).getTime();
                                         bestDate = date;
                                     }
@@ -286,7 +293,7 @@ public class CrosswordBot {
                         }
 
 
-                        //send out final message and/or PM
+                        // Send out final message and/or PM
                         if (!send.equals("")) message.reply(send);
                         if (!pm.equals("")) message.getAuthor().sendMessage(pm);
 
