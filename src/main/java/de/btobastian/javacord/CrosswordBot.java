@@ -1,12 +1,10 @@
 package de.btobastian.javacord;
 
 import com.google.common.util.concurrent.FutureCallback;
-import de.btobastian.javacord.entities.CustomEmoji;
-import de.btobastian.javacord.entities.User;
-import de.btobastian.javacord.entities.impl.ImplCustomEmoji;
 import de.btobastian.javacord.entities.message.Message;
 import de.btobastian.javacord.listener.message.MessageCreateListener;
 
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,8 +15,8 @@ import java.util.LinkedList;
  */
 public class CrosswordBot {
 
-    //              User            Date  TimeLog
-    private HashMap<User, HashMap<String, TimeLog>> times = new HashMap<>();
+
+    private Times times = new Times();
 
     private String send;
     private String[] userInput;
@@ -33,6 +31,7 @@ public class CrosswordBot {
      * @param token the String token used for the bot to connect to Discord.
      */
     private CrosswordBot(String token) {
+
         // See "How to get the token" below
         DiscordAPI api = Javacord.getApi(token, true);
         // connect
@@ -99,21 +98,23 @@ public class CrosswordBot {
                                         int seconds = Integer.parseInt(timeSplit[1]);
 
                                         // make new times key/value for new user
-                                        if (!times.keySet().contains(message.getAuthor())) {
+                                        if (!times.keySet().contains(message.getAuthor().getName())) {
                                             @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
                                             HashMap<String, TimeLog> newList = new HashMap<>();
-                                            times.put(message.getAuthor(), newList);
+                                            times.put(message.getAuthor().getName(), newList);
+                                            times.overwrite();
                                         }
 
                                         //see if time is being overridden
                                         boolean overrideTime = false;
-                                        if (times.get(message.getAuthor()).keySet().contains(getDate()))
+                                        if (times.get(message.getAuthor().getName()).keySet().contains(getDate()))
                                             overrideTime = true;
 
                                         // add time
-                                        times.get(message.getAuthor()).put(getDate(),
+                                        times.get(message.getAuthor().getName()).put(getDate(),
                                                 new TimeLog(seconds+minutes*60,
                                                 getDate()));
+                                        times.overwrite();
 
                                         // react to !time message
                                         // (Idea from Sarexicus)
@@ -137,11 +138,11 @@ public class CrosswordBot {
 
                         ///// COMMAND_MTT /////
                         if (check(COMMAND_MTT)) {
-                            if (times.keySet().contains(message.getAuthor())) {
+                            if (times.keySet().contains(message.getAuthor().getName())) {
 
-                                if (times.get(message.getAuthor()).keySet().contains(getDate())) {
+                                if (times.get(message.getAuthor().getName()).keySet().contains(getDate())) {
                                     add("Time for " + message.getAuthor().getName() + ":");
-                                    add(times.get(message.getAuthor()).get(getDate()).toString());
+                                    add(times.get(message.getAuthor().getName()).get(getDate()).toString());
                                 } else add("You haven't submitted a time today.");
                             } else add("You haven't submitted any times.");
                         }
@@ -149,32 +150,32 @@ public class CrosswordBot {
 
                         ///// COMMAND_MT /////
                         if (check(COMMAND_MT)) {
-                            if (times.keySet().contains(message.getAuthor())) {
+                            if (times.keySet().contains(message.getAuthor().getName())) {
 
                                 add("Times for " + message.getAuthor().getName() + ":");
-                                for (String date : times.get(message.getAuthor()).keySet()) {
-                                    add(times.get(message.getAuthor()).get(date).toString());
+                                for (String date : times.get(message.getAuthor().getName()).keySet()) {
+                                    add(times.get(message.getAuthor().getName()).get(date).toString());
                                 }
                             } else add("You haven't submitted any times.");
                         }
 
                         ///// COMMAND_MBT /////
                         if (check(COMMAND_MBT)) {
-                            if (times.keySet().contains(message.getAuthor())) {
+                            if (times.keySet().contains(message.getAuthor().getName())) {
 
                                 int bestTime = -1;
                                 String bestDate = "";
 
-                                for (String date : times.get(message.getAuthor()).keySet()) {
-                                    if (bestTime == -1 || bestTime > times.get(message.getAuthor()).get(date).getTime()) {
-                                        bestTime = times.get(message.getAuthor()).get(date).getTime();
+                                for (String date : times.get(message.getAuthor().getName()).keySet()) {
+                                    if (bestTime == -1 || bestTime > times.get(message.getAuthor().getName()).get(date).getTime()) {
+                                        bestTime = times.get(message.getAuthor().getName()).get(date).getTime();
                                         bestDate = date;
                                     }
                                 }
 
                                 try {
                                     add("Best time for " + message.getAuthor().getName() + " is:");
-                                    add(times.get(message.getAuthor()).get(bestDate).toString());
+                                    add(times.get(message.getAuthor().getName()).get(bestDate).toString());
                                 } catch (NullPointerException exc) {
                                     System.out.print("Can't fetch properly.");
                                 }
@@ -190,11 +191,11 @@ public class CrosswordBot {
 
                                 boolean displayError = true;
 
-                                for (User user : times.keySet()) {
+                                for (String user : times.keySet()) {
                                     if (times.get(user).keySet().contains(getDate())) {
                                         add(BREAK);
                                         displayError = false;
-                                        add("Time for " + user.getName() + ":");
+                                        add("Time for " + user + ":");
                                         add(times.get(user).get(getDate()).toString());
                                     }
                                 }
@@ -210,9 +211,9 @@ public class CrosswordBot {
                             if (times.keySet().size() > 0) {
 
                                 add(BREAK);
-                                for (User user : times.keySet()) {
+                                for (String user : times.keySet()) {
 
-                                    add("Times for " + user.getName() + ":");
+                                    add("Times for " + user + ":");
                                     for (String date : times.get(user).keySet()) {
                                         add(times.get(user).get(date).toString());
                                     }
@@ -228,10 +229,10 @@ public class CrosswordBot {
                             if (times.keySet().size() > 0) {
 
                                 boolean displayError = true;
-                                User bestUser = null;
+                                String bestUser = null;
                                 int bestTime = -1;
 
-                                for (User user : times.keySet()) {
+                                for (String user : times.keySet()) {
 
                                     if (times.get(user).keySet().contains(getDate())) {
                                         if (bestTime == -1 || bestTime > times.get(user).get(getDate()).getTime()) {
@@ -244,7 +245,7 @@ public class CrosswordBot {
                                 }
                                 if (displayError) add("No times submitted for today.");
                                 else {
-                                    add("Best time today is from " + bestUser.getName() + ":");
+                                    add("Best time today is from " + bestUser + ":");
                                     add(times.get(bestUser).get(getDate()).toString());
                                 }
                             } else add("No times submitted, ever.");
@@ -254,13 +255,13 @@ public class CrosswordBot {
                         ///// COMMAND_BTAT /////
                         if (check(COMMAND_BTAT)) {
 
-                            User bestUser = null;
+                            String bestUser = null;
                             int bestTime = -1;
                             String bestDate = "";
 
                             if (times.keySet().size() > 0) {
 
-                                for (User user : times.keySet()) {
+                                for (String user : times.keySet()) {
 
                                     for (String date : times.get(user).keySet()) {
                                         if (bestTime == -1 || bestTime > times.get(user).get(date).getTime()) {
@@ -273,7 +274,7 @@ public class CrosswordBot {
 
                                 try {
                                     assert bestUser != null;
-                                    add("Best time of all time is from " + bestUser.getName() + ":");
+                                    add("Best time of all time is from " + bestUser + ":");
                                     add(times.get(bestUser).get(bestDate).toString());
                                 } catch (NullPointerException exc) {
                                     System.out.print("Can't fetch properly.");
@@ -330,23 +331,15 @@ public class CrosswordBot {
     }
 
     /**
-     * Return a time in seconds as a properly-formatted time.
-     * @param seconds the int time in seconds.
-     * @return the String time (0:00).
-     */
-    public static String formatTime(int seconds) {
-        String minutes = String.valueOf((int)Math.floor(seconds / 60));
-        String secondsDisplay = String.valueOf(seconds % 60);
-        if (secondsDisplay.length() == 1) secondsDisplay = "0".concat(secondsDisplay);
-        return minutes.concat(":" + secondsDisplay);
-    }
-
-    /**
      * Get the bot up and running.
      * @param args the executable arguments.
      */
     public static void main(String args[]) {
+
+        // Create the bot
         CrosswordBot bot = new CrosswordBot(BOT_TOKEN);
+
+
     }
 
 }

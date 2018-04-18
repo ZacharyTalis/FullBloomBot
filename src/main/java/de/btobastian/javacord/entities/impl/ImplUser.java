@@ -58,7 +58,7 @@ import java.util.concurrent.Future;
 /**
  * The implementation of the user interface.
  */
-public class ImplUser implements User {
+public class ImplUser implements User{
 
     /**
      * The logger of this class.
