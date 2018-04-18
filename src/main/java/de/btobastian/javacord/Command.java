@@ -6,7 +6,6 @@ public class Command {
 
     private String name;
     private String info;
-    LinkedList<Command> commands;
 
     Command(String name, String info, LinkedList<Command> commands) {
         this.name = name;

@@ -19,6 +19,7 @@ public class CrosswordBot {
     private Times times = new Times();
 
     private String send;
+    private String pm;
     private String[] userInput;
 
     private static final String BOT_TOKEN = "NDM1NTYwNjI3NjA0MjkxNTk1.DbbMDg.0uUYi9IFWJhSV3wRpQxWBap6HYk";
@@ -45,6 +46,7 @@ public class CrosswordBot {
 
                         userInput = message.getContent().split(" ");
                         send = "";
+                        pm = "";
 
 
                         ///// Set all commands /////
@@ -63,9 +65,9 @@ public class CrosswordBot {
                         // TODO this doesn't always send right away?
                         ///// COMMAND_HELP /////
                         if (check(COMMAND_HELP)) {
-                            String pm = "";
                             for (Command command : publicCommands) {
-                                pm = pm.concat(command.getName()+" ~ "+command.getInfo()+"\n");
+                                //pm = pm.concat(command.getName()+" ~ "+command.getInfo()+"\n");
+                                pm = pm.concat(command.getName()+"\n");
                             }
                             message.getAuthor().sendMessage(pm);
                         }
@@ -284,8 +286,9 @@ public class CrosswordBot {
                         }
 
 
-                        //send out final message
+                        //send out final message and/or PM
                         if (!send.equals("")) message.reply(send);
+                        if (!pm.equals("")) message.getAuthor().sendMessage(pm);
 
 
                     }
