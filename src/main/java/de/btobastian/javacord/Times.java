@@ -17,17 +17,17 @@ public class Times implements Serializable {
     private LinkedList<String> keys = new LinkedList<>();
     private LinkedList<HashMap<String, TimeLog>> values = new LinkedList<>();
 
-    private final String KEYSNAME = "data/keys.log";
-    private final String VALUESNAME = "data/values.log";
+    private final String KEYSPATH = "data/keys.log";
+    private final String VALUESPATH = "data/values.log";
 
     public Times() {
 
         try {
 
-            ObjectInputStream readsOne = new ObjectInputStream(new FileInputStream(KEYSNAME));
+            ObjectInputStream readsOne = new ObjectInputStream(new FileInputStream(KEYSPATH));
             //noinspection unchecked
             keys = (LinkedList<String>) readsOne.readObject();
-            ObjectInputStream readsTwo = new ObjectInputStream(new FileInputStream(VALUESNAME));
+            ObjectInputStream readsTwo = new ObjectInputStream(new FileInputStream(VALUESPATH));
             //noinspection unchecked
             values = (LinkedList<HashMap<String, TimeLog>>) readsTwo.readObject();
 
@@ -39,10 +39,10 @@ public class Times implements Serializable {
             }
 
         } catch (IOException exc) {
-            System.out.println("Times log file not found, or has been corrupted.");
+            System.out.println("info.log and/or keys.log not found, or have been corrupted.");
             exc.printStackTrace();
         } catch (ClassNotFoundException exc) {
-            System.out.println("times.log file has been corrupted.");
+            System.out.println("info.log and/or keys.log have been corrupted.");
             exc.printStackTrace();
         }
 
@@ -70,9 +70,9 @@ public class Times implements Serializable {
 
 
         try {
-            ObjectOutputStream writesOne = new ObjectOutputStream(new FileOutputStream(KEYSNAME));
+            ObjectOutputStream writesOne = new ObjectOutputStream(new FileOutputStream(KEYSPATH));
             writesOne.writeObject(keys);
-            ObjectOutputStream writesTwo = new ObjectOutputStream(new FileOutputStream(VALUESNAME));
+            ObjectOutputStream writesTwo = new ObjectOutputStream(new FileOutputStream(VALUESPATH));
             writesTwo.writeObject(values);
         } catch (IOException exc) {
             System.out.println("times.log not found, or has been corrupted.");

@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import de.btobastian.javacord.entities.User;
 import de.btobastian.javacord.entities.message.Message;
 import de.btobastian.javacord.listener.message.MessageCreateListener;
+import de.btobastian.javacord.utils.Info;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -16,20 +17,22 @@ import java.util.LinkedList;
  */
 public class CrosswordBot {
 
+    // Objects that save
     private Times times = new Times();
+    private Info info = new Info(getDate());
 
+    // Used for user input parsing/message sending
     private String send;
     private String pm;
     private String[] userInput;
+    private LinkedList<String> staffList = new LinkedList<>();
 
+    // Constants
     private static final String BOT_TOKEN = "NDM1NTYwNjI3NjA0MjkxNTk1.DbbMDg.0uUYi9IFWJhSV3wRpQxWBap6HYk";
     private final String ERROR_TIME = "Proper syntax - \"M:SS\"";
     private final String BREAK = "-----";
     private final LinkedList<Command> publicCommands = new LinkedList<>();
     private final LinkedList<Command> staffCommands = new LinkedList<>();
-
-    ///// Set all staff /////
-    private LinkedList<String> staffList = new LinkedList<>();
 
     /**
      * Constructor/runtime for CrosswordBot.
@@ -58,8 +61,6 @@ public class CrosswordBot {
         final Command COMMAND_NP = new Command("!newpuzzle", "Move to the current day's puzzle.",
                 staffCommands);
         final Command COMMAND_PP = new Command("!previouspuzzle", "Begin recording times for the previous puzzle.",
-                staffCommands);
-        final Command COMMAND_AS = new Command("!addstaff", "Add a staff to the staff list.",
                 staffCommands);
 
         //Set all staff
@@ -317,7 +318,6 @@ public class CrosswordBot {
 
 
                         // TODO add implementations for these commands
-
                         ///// STAFF COMMANDS BELOW /////
 
 
@@ -330,12 +330,6 @@ public class CrosswordBot {
                         ///// COMMAND_PD /////
                         if (check(COMMAND_PP) && inStaff(staffList, message)) {
                             send = "Begin recording times for the previous puzzle.";
-                        }
-
-
-                        ///// COMMAND_AS /////
-                        if (check(COMMAND_AS) && inStaff(staffList, message)) {
-                            send = "Staff add implementation.";
                         }
 
 
