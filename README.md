@@ -1,5 +1,7 @@
 A [Javacord](https://github.com/Javacord/Javacord) Discord bot, written to facilitate **Fervor in [Full Bloom](https://fullbloomgame.com/)**! Sends MIDI data to port **mPort**. Main class: **FullBloomBot.ZacharyTalis.FullBloomBot**
 
+Make sure to fill in a new bot token **BOT_TOKEN**
+
 Default Javacord README left below.
 
 # Javacord <a href="#"><img src="https://img.shields.io/badge/Version-2.0.17-brightgreen.svg" alt="Latest version"></a> <a href="http://ci.ketrwu.de/job/Javacord/branch/master/javadoc/"><img src="https://img.shields.io/badge/JavaDoc-latest-yellow.svg" alt="Latest JavaDocs"></a> <a href="https://github.com/BtoBastian/Javacord/wiki"><img src="https://img.shields.io/badge/Wiki-Home-red.svg" alt="Latest JavaDocs"></a>
