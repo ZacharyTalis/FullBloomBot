@@ -20,7 +20,7 @@ public class FullBloomBot {
     private String[] userInput;
 
     // Constants
-    private static final String BOT_TOKEN = "NzI1NzY5NTYyOTk3MzkxMzkx.XvTk_A.sMIdBTHIKxrR5S7k01DOmTb99I0";
+    private static final String BOT_TOKEN = "FILL IN TOKEN";
     private final LinkedList<Command> publicCommands = new LinkedList<>();
     private final HashMap<Character, Integer> noteList = new HashMap<>();
     private final HashMap<Character, Integer> noteCount = new HashMap<>();
