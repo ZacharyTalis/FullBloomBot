@@ -76,7 +76,7 @@ public class FullBloomBot {
         noteList.put('z',86);
         //</editor-fold>
 
-        //<editor-fold desc="Set all notes in noteList">
+        //<editor-fold desc="Set initial note counts in noteCount">
         noteCount.put('a',0);
         noteCount.put('b',0);
         noteCount.put('c',0);
@@ -182,6 +182,7 @@ public class FullBloomBot {
                                 ShortMessage mMessage = new ShortMessage();
                                 mMessage.setMessage(128, 1, noteList.get(cChar), 100);
                                 mReceiver.send(mMessage, 0);
+                                noteCount.put(cChar, 0);
                             }
                         }
 
